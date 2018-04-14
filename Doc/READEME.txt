@@ -1,0 +1,56 @@
+/***************************************************
+****************************************************
+****************************************************
++--------------------------------------------------+
+|Name：远传直读式水表--采集器程序 说明文档
+|Author：江思为
+|Time：2018-03-20
++--------------------------------------------------+
+****************************************************
+****************************************************
+***************************************************/
+一、工程文件结构
+
+	USER/		用户程序
+		app_scheduler.h
+		app_scheduler.c
+		lora.h
+		lora.c
+		loraSet.h
+		test.h
+		test.c
+		main.c
+	DRIVER/    驱动程序
+		hardware.h
+		timer.h
+		timer.c
+		uart.h
+		uart.c
+		usually.h
+		usually.c
+	FWLIB/	   固件库程序
+		...
+	CMSIS/	   系统程序
+		...
+	STARTUP/   启动程序
+		...
+	DOC/	   说明文档
+		README.txt
+二、程序说明
+	app_scheduler程序	
+	消息队列，实现简单的程序调度
+	为期望的每一个事件定义一个事件处理程序
+	在进入应用程序主循环之前调用appscheduler init（）宏来初始化调度程序
+	当应用程序执行主循环的时候，调用app_sched_execute()来执行事件的处理程序
+	
+	MACRO：
+		SCHED_MAX_EVENT_DATA_SIZE        调度事件的最大大小
+		SCHED_QUEUE_SIZE                 调度队列的最大事件数
+		
+
+
+		APP_SCHED_EVENT_HEADER_SIZE 8       		定义app_sched_event_handler_t的大小
+		APP_SCHED_INIT(EVENT_SIZE, QUEUE_SIZE)		初始化调度程序，并分配调度队列的大小
+													参数EVENT_SIZE：调度事件的最大大小
+													参数QUEUE_SIZE：调度队列的最大事件数
+	FUNCTION：
