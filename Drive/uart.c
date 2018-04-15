@@ -158,19 +158,21 @@ void Usart1_Configuration(uint32_t BaudRate)
 ** 日　  期: 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 //uint8_t USART1_ReceiveDate[64],USART1_LEN=0;;								//定义一个变量存放接收的数据
+/*
 void USART1_IRQHandler()
 {
 	uint8_t RX_dat;
 	if(USART_GetITStatus(USART1,USART_IT_RXNE)!=RESET)//判断发生接收中断
 	{
-		RX_dat=(USART_ReceiveData(USART1) & 0x7F);      //接收数据，整理除去前两位
+		RX_dat= USART_ReceiveData(USART1) ;      //接收数据，整理除去前两位
 	}
 	USART_ClearITPendingBit(USART1,  USART_IT_RXNE);          //清除中断标志
 	//while(USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == RESET){}//等待接收结束
 		
-	USART_SendData(USART3 ,RX_dat);             //发送数据 
+	USART_SendData(USART1 ,RX_dat);             //发送数据 
 }
 
+*/
 
 /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 USART2*********************************************************
@@ -178,7 +180,7 @@ LoRa数据端口****************************************************
 RX-->PA3*******************************************************
 TX-->PA2*******************************************************
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-#define MAX_UART_LEN  64
+#define MAX_UART_LEN  255
 uint8_t UART2_RECV_BUF[MAX_UART_LEN]={0};
 uint8_t UART2_RECV_LEN=0;
 /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -364,7 +366,7 @@ void USART2_IRQHandler()
 		temp=temp;
     DMA_Cmd(DMA1_Channel6,DISABLE);
     UART2_RECV_LEN = MAX_UART_LEN - DMA_GetCurrDataCounter(DMA1_Channel6);
-
+		
 		#ifdef DEBUG_USART2_IRQHANDLER
 		uint8_t i;
 		#endif
@@ -409,6 +411,10 @@ void USART3_Send_String(uint8_t* Data,uint8_t len)
 	{
 		USART3_Send_Byte(Data[i]);
 	}
+}
+void USART3_Receive_Byte(uint8_t len)
+{
+	
 }
 void USART3_Receive_DMA(uint8_t* data,uint8_t len)
 {
@@ -542,10 +548,11 @@ void USART3_IRQHandler()
 		uint8_t i;
 		#endif
 		
-    if(UART3_RECV_LEN>0)// && UART3_RECV_BUF[0] == LEADBYTE && UART3_RECV_BUF[1] == LEADBYTE  )
+    if(UART3_RECV_LEN>3)// && UART3_RECV_BUF[0] == LEADBYTE && UART3_RECV_BUF[1] == LEADBYTE  )
     {
 			#ifdef DEBUG_USART3_IRQHANDLER
 			printf("[USART3 DMA RECV data info:]\r\n[");
+			printf("%s\r\n",UART3_RECV_BUF);
 			for(i=0;i<UART3_RECV_LEN;i++)
 			{
 				//printf("%02x ",UART3_RECV_BUF[i]);
@@ -561,7 +568,7 @@ void USART3_IRQHandler()
 			#endif
 			
 			#ifdef GPRS
-			//GPRS_RecvPacket(UART3_RECV_BUF,UART3_RECV_LEN);
+			GPRS_RecvPacket(UART3_RECV_BUF,UART3_RECV_LEN);
 			#endif
     }
 		            

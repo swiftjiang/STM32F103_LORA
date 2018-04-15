@@ -180,7 +180,7 @@ void MASTER_GPRS_ProductFunction(void *data,uint8_t len);
 void SLAVER_MBUS_ProductFunction(void *data,uint8_t len);
 /***************************************************
 ***************************************************/
-static void LoRa_PacketParse(void *data,uint16_t len)
+void LoRa_PacketParse(void *data,uint16_t len)
 {
 	//返回6字节数据，返回的工作参数
 	//返回4字节数据，返回的版本信息
@@ -214,6 +214,7 @@ void MASTER_GPRS_ProductFunction(void *data,uint8_t len)
 		for(i=0;i<len;i++)
 		{
 			printf("0x%02x,",((uint8_t*)data)[i]);
+			
 		}
 		printf("\r\n------------------------------------\r\n");
 		#endif
@@ -223,7 +224,10 @@ void MASTER_GPRS_ProductFunction(void *data,uint8_t len)
 		*通过GPRS发送数据
 		*
 		*/
-		printf("[MASTER to GPRS]\r\n");
+		
+		char *gprs = "watermeter data\r\n";
+		printf("[MASTER to GPRS]%s",gprs);
+		USART3_Send_String((uint8_t *)gprs,strlen(gprs));
 	}
 	
 }

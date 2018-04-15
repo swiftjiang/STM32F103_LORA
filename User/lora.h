@@ -71,7 +71,7 @@ void LoRa_Reset(void);
 
 void LoRa_SendPacket(uint8_t *data,uint8_t len);
 void LoRa_RecvPacket(uint8_t *data,uint8_t len);
-static void LoRa_PacketParse(void *data,uint16_t len);
+void LoRa_PacketParse(void *data,uint16_t len);
 
 /*
 void LoRa_register_callback(callback cb,LoRaRegisterTypedef type);

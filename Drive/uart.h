@@ -45,6 +45,7 @@ TX-->PB10
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 void USART3_Send_Byte(uint8_t Data);
 void USART3_Send_String(uint8_t* Data,uint8_t len);
+void USART3_Receive_Byte(uint8_t len);
 void USART3_Receive_DMA(uint8_t* data,uint8_t len);
 void Init_Usart3(void);
 void Usart3_Configuration(uint32_t BaudRate); 

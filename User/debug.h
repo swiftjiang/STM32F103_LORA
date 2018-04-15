@@ -16,6 +16,7 @@
 
 #define DEBUG_MBUS 1
 #define DEBUG_GPRS 1
+#define DEBUG_GPRS_CONNECT 1
 
 
 #define TEST_LORA 1

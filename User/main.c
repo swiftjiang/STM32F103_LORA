@@ -4,6 +4,7 @@
 #include "app_scheduler.h"
 #include "lora.h"
 #include "timer.h"
+#include "gprs.h"
 
 #include "test.h"
 
@@ -47,17 +48,17 @@ int  main()
 	//timer_create(&mbusTest,3000,OPT_TMR_PERIODIC,MBUSTEST,NULL);
 	//timer_start(&mbusTest);
 	
-	#ifdef TEST_LORA
-	//lora数据收发测试函数
-	//testLoRa();
-	#endif
+	
+
+	
+	GPRS_Power(POWER_ON);
 	
 	while(1)													
 	{ 
 		//任务调度
 		app_sched_execute();
-		//USART3_Send_String((uint8_t*)"CHECK WATERMETER CMD",sizeof("CHECK WATERMETER CMD"));
 	}
+	
 }
 
 void init_system(void)
@@ -110,7 +111,7 @@ void init_system(void)
 	printf("+-----------------------------+\r\n\r\n");
 	#endif
 	
-	
+	GPRS_Init();
 	
 	#ifdef TEST_LORA
 	init_LoRa();
