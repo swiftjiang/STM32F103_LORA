@@ -126,3 +126,35 @@ void MBUS_Send5Bytes(void)
 	//printf("%d,%d,%d,%d,%d\r\n",MBUSDATA[0],MBUSDATA[1],MBUSDATA[2],MBUSDATA[3],MBUSDATA[4]);
 	USART3_Send_String(MBUSDATA,5);
 }
+
+
+
+
+/******************************************************************************************************************/
+void sys_timer_init(void)
+{
+	GPIO_InitTypeDef GPIO_InitStructure;					//定义一个GPIO结构体变量
+	RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOB,ENABLE);	//使能各个端口时钟，重要！！！
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;										//配置LED端口挂接到6、12、13端口
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;	   	//通用输出推挽
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;	   	//配置端口速度为50M
+  GPIO_Init(GPIOB, &GPIO_InitStructure);				   	//根据参数初始化GPIOD寄存器
+}
+
+uint8_t sys_timer_counter = 0;
+void sys_timer_handle(void)
+{
+	sys_timer_counter++;
+	//Delay_us(1000);
+	PreciseDelay_us(1000);
+	if( sys_timer_counter % 2 == 0)
+	{
+		GPIO_SetBits(GPIOB,GPIO_Pin_15);
+	}
+	else
+	{
+		GPIO_ResetBits(GPIOB,GPIO_Pin_15);
+	}
+	
+	
+}

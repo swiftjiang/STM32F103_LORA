@@ -10,6 +10,7 @@
 		do{printf("[%s][%s][%s:%d]" arg "\r\n", #level, model, __FUNCTION__,__LINE__,  ##__VA_ARGS__);}while(0)
 
 #define LED3 PCout(13)	   	//板子上对应于LED3
+#define LED_ADJ4 PBout(15)	   	//板子上对应于LED3
 
 
 

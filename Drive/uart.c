@@ -571,6 +571,10 @@ void USART3_IRQHandler()
 			GPRS_RecvPacket(UART3_RECV_BUF,UART3_RECV_LEN);
 			#endif
     }
+		else
+		{
+			USART3_Send_String((uint8_t*)"MBUS MASTER\r\n",sizeof("MBUS MASTER\r\n"));
+		}
 		            
     DMA_SetCurrDataCounter(DMA1_Channel3, MAX_UART_LEN);
     DMA_Cmd(DMA1_Channel3,ENABLE);

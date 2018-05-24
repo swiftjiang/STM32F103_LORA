@@ -10,6 +10,7 @@
 #include "app_scheduler.h"
 #include "timer.h"
 #include "lora.h"
+#include "sys_tick_timer.h"
 
 //usart2 DMA÷–∂œ≤‚ ‘
 void test_get_data(uint8_t *data,uint8_t len);
@@ -35,4 +36,9 @@ void timerHandler(void *arg);
 
 //MBUS≤‚ ‘ 
 void MBUS_Send5Bytes(void);
+
+//sys_tick_timer≤‚ ‘
+void sys_timer_init(void);
+void sys_timer_handle(void);
+
 #endif

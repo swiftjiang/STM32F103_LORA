@@ -35,6 +35,14 @@ void MBUSTEST(void* arg)
 
 int  main()
 {
+	/*
+	SystemInit();					//系统时钟配置
+	sys_timer_init();
+	while(1)
+	{
+		sys_timer_handle();
+	}
+	*/
 	//系统初始化
 	init_system();
 	
@@ -63,7 +71,7 @@ int  main()
 
 void init_system(void)
 {
-	SystemInit();					//系统时钟配置
+	//SystemInit();					//系统时钟配置
 
 	Init_NVIC_USART1();					//中断向量表注册函数
 	Init_Usart1();					//串口引脚配置
@@ -100,7 +108,7 @@ void init_system(void)
 	#endif
 	
 	Init_LED3();
-	timer_create(&SYSLED,200,OPT_TMR_PERIODIC,SYSTEM_LED,NULL);
+	timer_create(&SYSLED,200,OPT_TMR_PERIODIC,SYSTEM_LED,NULL);//200 modify
 	timer_start(&SYSLED);
 	#ifdef DEBUG_MAIN_FUN
 	printf("|--init system LED success----|\r\n");
@@ -111,6 +119,8 @@ void init_system(void)
 	printf("+-----------------------------+\r\n\r\n");
 	#endif
 	
+	
+	/*
 	GPRS_Init();
 	
 	#ifdef TEST_LORA
@@ -118,13 +128,15 @@ void init_system(void)
 	//lora数据收发测试函数
 	testLoRa();
 	#endif
-	
+	*/
 }
 
 void SYSTEM_LED(void* arg)
 {
 	(void)arg;
 	LED3=~LED3;
+	LED_ADJ4=~LED_ADJ4;
+	//USART3_Send_String((uint8_t*)"MBUS MASTER\r\n",sizeof("MBUS MASTER\r\n"));
 }
 
 

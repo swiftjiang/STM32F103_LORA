@@ -34,11 +34,11 @@ void LoRa_Init(void)
   	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;	   	//配置端口速度为50M
   	GPIO_Init(GPIOB, &GPIO_InitStructure);				   			//根据参数初始化GPIOB寄存器	
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2; 							//AUX-->PB2
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2; 							//AUX-->PB7
   	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;	//浮空输入(复位状态);	   				
   	GPIO_Init(GPIOB, &GPIO_InitStructure);				   			//根据参数初始化GPIOB寄存器	
 	
-	while(PBin(2)==0){;}
+	while(PBin(7)==0){;}
 	
 	LoRa_InitParameter();
 	
