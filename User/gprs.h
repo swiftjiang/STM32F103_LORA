@@ -8,10 +8,12 @@
 #include "usually.h"
 #include "timer.h"
 #include "lora.h"
+#include "sys_tick_timer.h"
+#include "profile.h"
 
 #define str_Call Ready  "Call Ready\r\n"
 #define str_SMS Ready   "SMS Ready\r\n"
-#define ATTEST			"AT\r\n"
+#define ATTEST					"AT\r\n"
 #define str_CGATT 			"AT+CGATT?\r\n"
 #define str_CIPMODE 		"AT+CIPMODE=1\r\n"
 #define str_CSTT 				"AT+CSTT=\"UNINET\"\r\n"
@@ -23,7 +25,7 @@
 typedef enum GPRS_Power
 {
 		POWER_OFF = 0,
-		POWER_ON  =1,
+		POWER_ON  = 1,
 } GPRS_PowerTypdef;
 
 void GPRS_RecvPacket(uint8_t *data,uint8_t len);

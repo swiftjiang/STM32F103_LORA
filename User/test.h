@@ -17,6 +17,7 @@ void test_get_data(uint8_t *data,uint8_t len);
 void test_parse(void *data,uint16_t len);
 
 //LoRa≤‚ ‘
+/*
 #define MAIN_MENU "\r\n\
 +--------------------+\r\n\
 |                    |\r\n\
@@ -28,7 +29,7 @@ void test_parse(void *data,uint16_t len);
 #define DEVICE_TYPE_SLAVER "|*******SLAVER*******|\r\n|--------------------|\r\n+--------------------+\r\n\r\n"
 void init_LoRa(void);
 void testLoRa(void);
-
+*/
 //timer≤‚ ‘
 void testTimer(void);
 void timerHandler(void *arg);

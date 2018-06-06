@@ -120,12 +120,12 @@ void Init_Usart1(void)
 	//使能各个端口时钟，重要！！！
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_USART1,ENABLE);	
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9; 							//RX-->PA9
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9; 							//TX-->PA9
   	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	   		//复用功能输出开漏
   	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;	   	//配置端口速度为50M
   	GPIO_Init(GPIOA, &GPIO_InitStructure);				   			//根据参数初始化GPIOA寄存器	
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10; 							//TX-->PA10
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10; 							//RX-->PA10
   	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;	//浮空输入(复位状态);	   				
   	GPIO_Init(GPIOA, &GPIO_InitStructure);				   			//根据参数初始化GPIOA寄存器	
 }
@@ -371,7 +371,7 @@ void USART2_IRQHandler()
 		uint8_t i;
 		#endif
 		
-    if(UART2_RECV_LEN>3)// && UART2_RECV_BUF[0] == LEADBYTE && UART2_RECV_BUF[1] == LEADBYTE  )
+    if(UART2_RECV_LEN>1)// && UART2_RECV_BUF[0] == LEADBYTE && UART2_RECV_BUF[1] == LEADBYTE  )
     {
 			#ifdef DEBUG_USART2_IRQHANDLER
 			printf("[USART2 DMA RECV data info:]");
@@ -571,10 +571,7 @@ void USART3_IRQHandler()
 			GPRS_RecvPacket(UART3_RECV_BUF,UART3_RECV_LEN);
 			#endif
     }
-		else
-		{
-			USART3_Send_String((uint8_t*)"MBUS MASTER\r\n",sizeof("MBUS MASTER\r\n"));
-		}
+		
 		            
     DMA_SetCurrDataCounter(DMA1_Channel3, MAX_UART_LEN);
     DMA_Cmd(DMA1_Channel3,ENABLE);

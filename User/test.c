@@ -43,7 +43,7 @@ void test_parse(void *data,uint16_t len)
 	
 }
 /**************************************************************************************************************/
-
+/*
 uint8_t MASTER_SENDTEST[8]={0x00,0x00,0x17,0xff,0xff,0x00,0x01,0x00};
 uint8_t SLAVER_SENDTEST[8]={0x00,0x01,0x17,0xff,0xff,0x00,0x00,0x00};
 uint8_t seq = 0;
@@ -62,8 +62,9 @@ void init_LoRa(void)
 	printf("waiting lora for reseting . . . . . .\r\n");
 	printf("init LoRa success \r\n\r\n");
 	
+	PreciseDelay_ms(1000);
 	LoRa_GetParameter();
-	Delay_Ms(1000);
+	PreciseDelay_ms(1000);
 	LoRa_GetVersionInfo();
 }
 
@@ -97,10 +98,8 @@ void testLoRa(void)
 	timer_create(&timerLoRa,5000,OPT_TMR_PERIODIC,timerLoRaHandler,NULL);
 	timer_start(&timerLoRa);
 	#endif
-	
-	
-	
 }
+*/
 /**************************************************************************************************************/
 
 timer_t testTimerTyp;
@@ -145,8 +144,8 @@ uint8_t sys_timer_counter = 0;
 void sys_timer_handle(void)
 {
 	sys_timer_counter++;
-	//Delay_us(1000);
-	PreciseDelay_us(1000);
+
+	PreciseDelay_ms(1000);
 	if( sys_timer_counter % 2 == 0)
 	{
 		GPIO_SetBits(GPIOB,GPIO_Pin_15);

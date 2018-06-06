@@ -6,6 +6,7 @@
 #include "lora.h"
 #include "uart.h"
 #include "debug.h"
+#include "profile.h"
 
 void MBUS_RecvPacket(uint8_t *data,uint8_t len);
 void MBUS_PacketParse(void *data,uint16_t len);

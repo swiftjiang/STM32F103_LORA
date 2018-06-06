@@ -27,10 +27,15 @@ void PreciseDelay_us(__IO u32 nTime)
 
 void PreciseDelay_ms(__IO u32 nTime)
 {
+	/*
 	TimingDelay = nTime;//多少个基础节拍
   SysTick_Init(1000);  //1ms
   SysTick->CTRL |=  SysTick_CTRL_ENABLE_Msk;  //使能系统滴答时钟---开始计时
   while(TimingDelay != 0);  //定时节拍结束
+	*/
+	
+	//if(nTime>0)
+		PreciseDelay_us(1000*nTime);
 }
 
 //---第三部分---滴答时钟的中断函数---
@@ -43,7 +48,9 @@ void TimingDelay_Decrement(void)   //节拍递减---在中断中使用
 
 void SysTick_Handler(void)  //---中断---
 {
-	TimingDelay_Decrement(); //进一次中断递减一次
+	//TimingDelay_Decrement(); //进一次中断递减一次
+	if (TimingDelay != 0x00)
+		TimingDelay--;
 }
 
 //static uint8_t TIME_OUT = 0;

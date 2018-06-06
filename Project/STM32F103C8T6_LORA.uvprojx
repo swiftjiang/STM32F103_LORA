@@ -470,6 +470,16 @@
               <FileType>5</FileType>
               <FilePath>..\User\profile.h</FilePath>
             </File>
+            <File>
+              <FileName>flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>flash.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\flash.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

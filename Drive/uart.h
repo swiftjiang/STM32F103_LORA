@@ -13,8 +13,8 @@
 /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 USART1
 µ÷ÊÔ´®¿Ú
-RX-->PA9
-TX-->PA10
+RX-->PA10
+TX-->PA9
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 void USART1_Send_Byte(uint8_t Data);
 void USART1_Send_String(uint8_t* Data,uint8_t len);

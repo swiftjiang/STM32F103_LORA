@@ -5,6 +5,7 @@
 #include "lora.h"
 #include "timer.h"
 #include "gprs.h"
+#include "flash.h"
 
 #include "test.h"
 
@@ -12,6 +13,19 @@ void init_system(void);
 timer_t SYSLED;
 timer_t timerLoRa;
 void SYSTEM_LED(void* arg);//系统运行指示
+
+
+#define MAIN_MENU "\r\n\
++--------------------+\r\n\
+|                    |\r\n\
+|    LoRa testing    |\r\n\
+|                    |\r\n\
+|--------------------|\r\n\
+|--------------------|\r\n"
+#define DEVICE_TYPE_MASTER "|*******MASTER*******|\r\n|--------------------|\r\n+--------------------+\r\n"
+#define DEVICE_TYPE_SLAVER "|*******SLAVER*******|\r\n|--------------------|\r\n+--------------------+\r\n\r\n"
+
+
 
 /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ** 函数名称: main
@@ -57,7 +71,7 @@ int  main()
 	//timer_start(&mbusTest);
 	
 	
-
+	
 	
 	GPRS_Power(POWER_ON);
 	
@@ -68,10 +82,11 @@ int  main()
 	}
 	
 }
+uint32_t tedata[1024] = {0};
 
 void init_system(void)
 {
-	//SystemInit();					//系统时钟配置
+	SystemInit();					//系统时钟配置
 
 	Init_NVIC_USART1();					//中断向量表注册函数
 	Init_Usart1();					//串口引脚配置
@@ -85,7 +100,7 @@ void init_system(void)
 
 	Init_NVIC_USART2();					//中断向量表注册函数
 	Init_Usart2();					//串口引脚配置
-	Usart2_Configuration(9600);	//串口配置 设置波特率为115200
+	Usart2_Configuration(9600);	//串口配置 设置波特率为2400
 	#ifdef DEBUG_MAIN_FUN
 	printf("|--init usart2 success--------|\r\n");
 	#endif
@@ -119,16 +134,76 @@ void init_system(void)
 	printf("+-----------------------------+\r\n\r\n");
 	#endif
 	
+	/*********************************************************************************************************************************************/
 	
-	/*
-	GPRS_Init();
+	uint8_t Temp_Data[1024] = {0};
+	uint8_t d[1024] = {0};
+	uint32_t data[5] = {0x12345678,0x12345678,0x12345678,0x12345678,0x12345678};
 	
-	#ifdef TEST_LORA
-	init_LoRa();
-	//lora数据收发测试函数
-	testLoRa();
+  uint32_t ReadNum = 0;
+	uint32_t WriteNum = 0;
+  int i = 0;  
+
+	
+	
+	for(i=0;i<1024;i++)
+	{
+		tedata[i] = i;
+		d[i] = i+1;
+		//printf("%d,%d\r\n",i,tedata[i]);
+	}
+	
+	
+  WriteNum = WriteFlashNWord(0,d,1023);     //写入数据     
+	printf("%d-------------------------------------------------------\r\n",WriteNum);                //发送读取的字节数
+  ReadNum = ReadFlashNBtye(0, Temp_Data,1024); //读取数据
+  printf("%d-------------------------------------------------------\r\n",ReadNum);                //发送读取的字节数  
+
+  
+
+  for(i = 0;i < ReadNum;i++)                
+  {
+		printf("%x\r\n",Temp_Data[i]);   //发送读取到的数据，可观测数据的存储格式  
+  }
+	printf("----------------------------------------------------------\r\n");
+
+	return;
+	/*********************************************************************************************************************************************/
+	//GPRS_Init();
+	//return;
+	
+	/**************************LoRa 初始化*********************************/
+	printf("%s",MAIN_MENU);
+	#ifdef MASTER
+	printf("%s",DEVICE_TYPE_MASTER);
 	#endif
-	*/
+	#ifdef SLAVER
+	printf("%s",DEVICE_TYPE_SLAVER);
+	#endif
+	
+	LoRa_Init();
+	LoRa_Reset();
+	printf("waiting lora for reseting . . . . . .\r\n");
+	printf("init LoRa success \r\n\r\n");
+	
+	PreciseDelay_ms(1000);
+	LoRa_GetParameter();
+	PreciseDelay_ms(1000);
+	LoRa_GetVersionInfo();
+	PreciseDelay_ms(1000);
+	LoRa_SetMode(MODE0);
+	
+
+	LoRaHeartbeat();
+
+	
+/*
+	GPRS_Init();
+*/
+
+
+
+
 }
 
 void SYSTEM_LED(void* arg)

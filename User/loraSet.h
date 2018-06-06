@@ -4,12 +4,18 @@
 #define MASTER 1
 //#define SLAVER 1
 
+#define LORA_STATUS 
+
 #ifdef MASTER
-#define GPRS
+#define GPRS  
+#define ADDR  		0x0001
+#define CHANNEL 	0x17
 #endif
 
 #ifdef SLAVER
-#define MBUS
+#define MBUS  
+#define ADDR  		0x0000
+#define CHANNEL 	0x17
 #endif
 
 #endif

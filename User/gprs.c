@@ -23,51 +23,7 @@ void GPRS_RecvPacket(uint8_t *data,uint8_t len)
 
 void GPRS_PacketParse(void *data,uint16_t len)
 {
-	uint8_t i;
-	uint8_t info[255] = {0};
-	for(i=0;i<len;i++)
-	{
-		info[i] = ((uint8_t*)data)[i];
-	}
-	#ifdef DEBUG_GPRS
-	
-	printf("[GPRS_PacketParse]\r\n");
-	
-	for(i=0;i<len;i++)
-	{
-		printf("0x%02x,",((uint8_t*)data)[i]);
-		//printf("%c,",((uint8_t*)data)[i]);
-	}
-	
-	printf("----------------------------\r\n");
-	#endif
-	/*
-	if(((uint8_t*)data)[2] == 0x02 && ((uint8_t*)data)[3] == 0x01)
-	{
-		uint8_t up2master[10] = {0x00,0x01,0x17,0xff,0xff};
-		
-		#ifdef DEBUG_GPRS
-		printf("[MASTER GPRS get watermeter data]");
-		#endif
-		
-		for(i=2;i<len;i++)
-		{
-			up2master[i+3] = ((uint8_t*)data)[i];
-		}
-		
-		#ifdef DEBUG_GPRS
-		printf("\r\n[MASTER GPRS to MASTER watermeter data]");
-		printf("\r\n------------------------------------\r\n");
-		#endif
-		*/
-		//下发命令
-		if(strstr((char *)info,"CMD"))
-		{
-			//uint8_t MASTER_SENDTEST[8]={0x00,0x00,0x17,0xff,0xff,0x00,0x01,0x00};
-			uint8_t cmd[8] = {0x00,0x00,0x17,0xff,0xff,0x01,0x01,0x00};
-			LoRa_SendPacket(cmd,sizeof(cmd));
-		}
-		
+	Profie_get_data(GPRS_DATA,data,len);
 }
 
 
@@ -76,25 +32,28 @@ void GPRS_PacketParse(void *data,uint16_t len)
 
 void GPRS_Init(void)
 {
+	GPRS_EN_Init();
 	GPRS_Reset();
 	
-	GPRS_EN_Init();
+	
 
 	USART_ITConfig(USART1,USART_IT_RXNE,ENABLE);
 	USART_ITConfig(USART3,USART_IT_RXNE,DISABLE);
 	USART_DMACmd(USART3,USART_DMAReq_Rx,DISABLE);
 	
-	printf("GPRS模块GPRS测试程序\r\n");
-	printf("GPRS模块在注册网络\r\n");
-	Delay_Ms(1000); 
+	printf("GPRS model is registering network\r\n");
+	PreciseDelay_ms(500); 
 	USART3_Send_String((uint8_t *)"+++",3);//退出透传模式，避免模块还处于透传模式中
-  Delay_Ms(2000);
+	PreciseDelay_ms(1000);
+	
+	//USART3_Send_String((uint8_t *)"ATZ\r\n",sizeof("ATZ\r\n"));//复位指令
+	printf("registering.....\r\n");
 	Wait_CREG();   //等待模块注册成功
-	printf("GPRS模块注册成功\r\n");
-	printf("GPRS模块开始连接服务器\r\n");
+	printf("GPRS model registered OK\r\n");
+	printf("GPRS model begin to connect server\r\n");
 	Set_ATE0();    //取消回显
-	Connect_Server(); //设置GPRS参数
-	printf("连接成功\r\n");
+	Connect_Server();
+	
 	
 	USART_ITConfig(USART1,USART_IT_RXNE,DISABLE);
 	USART_ITConfig(USART3,USART_IT_RXNE,ENABLE);
@@ -104,9 +63,9 @@ void GPRS_Init(void)
 void GPRS_EN_Init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;										//定义一个GPIO结构体变量
-		
+	
 	RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOB,ENABLE);		//使能各个端口时钟，重要！！！
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;								//配置EN到9PIN
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;								//配置EN到9PIN
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;	   		//通用输出推挽
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;	   		//配置端口速度为50M
   GPIO_Init(GPIOB, &GPIO_InitStructure);				   				//根据参数初始化GPIOD寄存器
@@ -118,13 +77,28 @@ void GPRS_Power(GPRS_PowerTypdef status)
 		GPIO_SetBits(GPIOB,GPIO_Pin_9);
 	if(status == POWER_OFF)
 		GPIO_ResetBits(GPIOB,GPIO_Pin_9);
-	Delay_Ms(1000);
+	PreciseDelay_ms(1000);
 }
 
 void GPRS_Reset(void)
 {
-	GPRS_Power(POWER_OFF);
-	GPRS_Power(POWER_ON);
+	//uint16_t i,j;
+	//GPRS_Power(POWER_OFF);
+	//GPRS_Power(POWER_ON);
+	GPIO_SetBits(GPIOB,GPIO_Pin_12);
+	PreciseDelay_us(1000);
+	/*
+	GPIO_SetBits(GPIOB,GPIO_Pin_12);
+	for(i=0;i<500;i++)
+	{
+		for(j=0;j<10;j++)
+		{
+			j=j;
+		}
+	}
+	*/
+	GPIO_ResetBits(GPIOB,GPIO_Pin_12);
+	PreciseDelay_us(1000);
 }
 
 
@@ -214,15 +188,9 @@ u8 Find(char *a)
 * 返回   : 
 * 注意   : 
 *******************************************************************************/
-void AT_timerHandler(void *arg)
-{
-	if(Times>0)
-	{
-		Times--;
-	}
-}
 void Second_AT_Command(char *b,char *a,u8 wait_time)         
 {
+	CLR_Buf1(); 
 	char *c;
 	c = b;										//保存字符串地址到c
 	CLR_Buf1(); 
@@ -240,7 +208,7 @@ void Second_AT_Command(char *b,char *a,u8 wait_time)
 	                  
 	while(Times && !ret)
 	{
-		Delay_Ms(1000);
+		PreciseDelay_ms(1000);
 		Times--;
 		ret = Find(a);
 		printf("Times = %d,ret = %d\r\n",Times,ret);
@@ -250,10 +218,10 @@ void Second_AT_Command(char *b,char *a,u8 wait_time)
     }
 	}
 	Times = 0;
-		
-	printf("Uart1_Buf = [%s]\r\n",Uart1_Buf);
+
+	printf("*********************%s*********************\r\n",Uart1_Buf);
 	
-	CLR_Buf1(); 
+	PreciseDelay_ms(200);
 }
 
 /*******************************************************************************
@@ -269,12 +237,13 @@ void Wait_CREG(void)
 	u8 i;
 	u8 k;
 	i = 0;
+	
   while(i == 0)        			
 	{
 		CLR_Buf1();        
 		USART3_Send_String((uint8_t*)"AT+CREG?",strlen("AT+CREG?"));   //查询等待模块注册成功
 		USART3_Send_String((uint8_t*)"\r\n",2);
-		Delay_Ms(5000);  						
+		PreciseDelay_ms(5000);  						
 	    for(k=0;k<Buf2_Max;k++)      			
     	{
 				if(Uart1_Buf[k] == ':')
@@ -287,7 +256,7 @@ void Wait_CREG(void)
 					}
 				}
 			}
-		printf("注册中.....");
+		//printf("注册中.....\r\n");
 	}
 }
 
@@ -315,24 +284,61 @@ void Set_ATE0(void)
 void Connect_Server(void)
 {
 	USART3_Send_String((uint8_t *)"AT+CIPCLOSE=1",strlen("AT+CIPCLOSE=1"));	//关闭连接
-  Delay_Ms(100);
-	Second_AT_Command("AT+CIPSHUT","SHUT OK",2);		//关闭移动场景
-	Second_AT_Command("AT+CGCLASS=\"B\"","OK",2);//设置GPRS移动台类别为B,支持包交换和数据交换	
-	Second_AT_Command("AT+CGDCONT=1,\"IP\",\"UNINET\"","OK",2);//设置PDP上下文,互联网接协议,接入点等信息
-	Second_AT_Command("AT+CGATT=1","OK",2);//附着GPRS业务
-	Second_AT_Command("AT+CIPCSGP=1,\"UNINET\"","OK",2);//设置为GPRS连接模式
-  Second_AT_Command("AT+CIPMUX=0","OK",2);//设置为单路连接
-	Second_AT_Command("AT+CIPHEAD=1","OK",2);//设置接收数据显示IP头(方便判断数据来源,仅在单路连接有效)
-	Second_AT_Command("AT+CIPMODE=1","OK",2);//打开透传功能
-	Second_AT_Command("AT+CIPCCFG=4,5,200,1","OK",2);//配置透传模式：单包重发次数:2,间隔1S发送一次,每次发送200的字节
-  Second_AT_Command((char*)string,"OK",5);//建立连接
-  Delay_Ms(100);                                //等待串口数据接收完毕
-  CLR_Buf1();                                    //清串口接收缓存为透传模式准备
+  PreciseDelay_ms(100);
+	Second_AT_Command("AT+CIPSHUT",														"OK",			5);			//关闭移动场景
+	Second_AT_Command("AT+CGCLASS=\"B\"",											"OK",			2);			//设置GPRS移动台类别为B,支持包交换和数据交换	
+	Second_AT_Command("AT+CGDCONT=1,\"IP\",\"UNINET\"",				"OK",			2);			//设置PDP上下文,互联网接协议,接入点等信息
+	Second_AT_Command("AT+CGATT=1",														"OK",			2);			//附着GPRS业务
+	Second_AT_Command("AT+CIPCSGP=1,\"UNINET\"",							"OK",			2);			//设置为GPRS连接模式
+  Second_AT_Command("AT+CIPMUX=0",													"OK",			2);			//设置为单路连接
+	Second_AT_Command("AT+CIPHEAD=1",													"OK",			2);			//设置接收数据显示IP头(方便判断数据来源,仅在单路连接有效)
+	Second_AT_Command("AT+CIPMODE=1",													"OK",			2);			//打开透传功能
+	Second_AT_Command("AT+CIPCCFG=4,5,200,1",									"OK",			2);			//配置透传模式：单包重发次数:2,间隔1S发送一次,每次发送200的字节
+  Second_AT_Command((char*)string,													"OK",			5);			//建立连接
+  PreciseDelay_ms(500);//等待串口数据接收完毕
+	if(strstr(Uart1_Buf,"FAIL"))
+	{
+		printf("[GPRS ERROR gprs]-----connect fail-----\r\n");
+		;
+	}
+	
+	CLR_Buf1();//清串口接收缓存为透传模式准备
 }
 
 
 
+/*
 
+AT+CREG?
+
+AT+CIPCLOSE=1
+
+AT+CIPSHUT
+
+AT+CGCLASS="B"
+
+AT+CGDCONT=1,"IP","UNINET"
+
+AT+CGATT=1
+
+AT+CIPCSGP=1,UNINET
+
+AT+CIPMUX=0
+
+AT+CIPHEAD=1
+
+AT+CIPMODE=1
+
+AT+CIPCCFG=4,5,200,1
+
+AT+CIPSTART="TCP","139.199.222.35",2345
+
+
+
+
+
+
+*/
 
 
 
